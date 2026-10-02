@@ -39,10 +39,12 @@ describe("serverOptions", () => {
             user: { id: "u1", email: "ana@example.com" },
             request: { data: "body", cookies: "c", headers: { cookie: "c", accept: "*/*" } },
             extra: { photo: "bytes", note: "ana@example.com" },
+            tags: { to: "ana@example.com", route: "/a" },
         });
         expect(event.user).toEqual({ id: "u1" });
         expect(event.request).toEqual({ headers: { accept: "*/*" } });
         expect(event.extra).toEqual({ photo: "[redacted]", note: "[email-redacted]" });
+        expect(event.tags).toEqual({ to: "[email-redacted]", route: "/a" });
     });
 
     it("honours extra sensitive keys", () => {

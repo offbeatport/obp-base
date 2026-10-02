@@ -94,6 +94,7 @@ function stripRequest(request) {
 function scrubEvent(event, sensitive) {
     if (event.user) event.user = event.user.id === undefined ? {} : { id: event.user.id };
     stripRequest(event.request);
+    if (event.tags) event.tags = deepScrub(event.tags, sensitive);
     if (event.extra) event.extra = deepScrub(event.extra, sensitive);
     if (event.contexts) event.contexts = deepScrub(event.contexts, sensitive);
     for (const exception of event.exception?.values ?? []) {

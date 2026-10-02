@@ -6,26 +6,6 @@ export type SentrySettings = {
     sensitiveKeys?: readonly string[];
 };
 
-type ScrubbableEvent = {
-    user?: { id?: string | number; [key: string]: unknown } | null;
-    request?: { [key: string]: unknown } | null;
-    extra?: Record<string, unknown>;
-    contexts?: Record<string, unknown>;
-    exception?: {
-        values?: Array<{
-            value?: string;
-            stacktrace?: { frames?: Array<{ vars?: Record<string, unknown> }> };
-        }>;
-    };
-    message?: string;
-};
-
-type ScrubbableBreadcrumb = {
-    category?: string;
-    message?: string;
-    data?: Record<string, unknown>;
-};
-
 export type PrivateDataCollection = {
     readonly userInfo: false;
     readonly httpBodies: never[];
@@ -46,8 +26,8 @@ export type SentryOptions = {
     dataCollection: PrivateDataCollection;
     tracesSampleRate: number;
     enableLogs: false;
-    beforeSend: <E extends ScrubbableEvent>(event: E) => E;
-    beforeBreadcrumb: <B extends ScrubbableBreadcrumb>(breadcrumb: B) => B | null;
+    beforeSend: <E extends object>(event: E) => E;
+    beforeBreadcrumb: <B extends object>(breadcrumb: B) => B | null;
 };
 
 export declare const SENSITIVE_KEYS: readonly string[];
