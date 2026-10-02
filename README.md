@@ -27,6 +27,7 @@ the library takes values, the app owns its wording.
 | `obp-base/email-check` | server | `mailchecker` | `checkEmail` — reason codes, the app owns the copy |
 | `obp-base/env` | server | `zod` ≥3.25 | `defineEnv` + `nonEmpty`, `url`, `intIn`, `flag`, `emailList` |
 | `obp-base/http` | server | — | `securityHeaders`, `withSecurityHeaders`, `healthResponse` |
+| `obp-base/vite` | build | — | `obpBuildChecks()`: prints the analytics status in the build log |
 | `obp-check-env` | container | — | Pre-boot check of `.env.example` `# REQUIRED` markers |
 | `snippets/openpanel.html` | static HTML | — | The analytics tag for sites with no build step |
 
@@ -44,7 +45,7 @@ Every app names these the same way, in `.env.example`, `.env`, the Dockerfile an
 | variable | where | per app? |
 |---|---|---|
 | `VITE_OPENPANEL_CLIENT_ID` | build arg | yes — one OpenPanel project + client per product |
-| `VITE_OPENPANEL_API_URL` | build arg | no — `https://opapi.offbeatport.com` |
+| `VITE_OPENPANEL_API_URL` | build arg | no — one Coolify team variable, no default anywhere |
 | `SENTRY_DSN`, `VITE_SENTRY_DSN` | runtime / build arg | yes — one Sentry project per product, same DSN in both |
 | `SENTRY_PROJECT` | build arg | yes |
 | `SENTRY_ORG`, `SENTRY_AUTH_TOKEN` | build arg | no — Coolify shared team variables |
@@ -54,6 +55,16 @@ Every app names these the same way, in `.env.example`, `.env`, the Dockerfile an
 and a `build.args` entry in compose; a runtime-only value never reaches the browser. No OpenPanel
 client secret exists anywhere: browser tracking needs only the client ID, and the client's CORS
 origins are what stop other sites using it.
+
+Neither value has a default. With both blank, analytics is off. With only one set, the build log
+shows an error naming the missing variable, and the browser console repeats it at runtime.
+`obpBuildChecks()` in `vite.config.ts` is what puts the status in the build log:
+
+```ts
+import { obpBuildChecks } from "obp-base/vite";
+
+export default defineConfig({ plugins: [obpBuildChecks() /* , ... */] });
+```
 
 ## Usage
 
@@ -101,7 +112,7 @@ node node_modules/obp-base/bin/check-env.mjs --app PicSuper --require-in-product
 ## Static sites
 
 Paste `snippets/openpanel.html` before `</head>` and fill in `clientId`. With the ID blank the tag
-does nothing.
+does nothing. A static site has no build, so this is the one place the API URL is written out.
 
 ## Development
 

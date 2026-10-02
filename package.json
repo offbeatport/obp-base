@@ -42,6 +42,10 @@
             "types": "./src/check-env/index.d.mts",
             "default": "./src/check-env/index.mjs"
         },
+        "./vite": {
+            "types": "./src/vite/index.d.mts",
+            "default": "./src/vite/index.mjs"
+        },
         "./snippets/openpanel.html": "./snippets/openpanel.html",
         "./package.json": "./package.json"
     },

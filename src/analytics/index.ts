@@ -1,10 +1,8 @@
 import type { OpenPanel } from "@openpanel/web";
 
-export const OPENPANEL_API_URL = "https://opapi.offbeatport.com";
-
 export type AnalyticsOptions = {
     clientId: string | undefined;
-    apiUrl?: string | undefined;
+    apiUrl: string | undefined;
     untrackedPaths?: RegExp;
     trackOutgoingLinks?: boolean;
     trackAttributes?: boolean;
@@ -31,15 +29,22 @@ function pathOf(href: unknown): string | null {
 }
 
 export function startAnalytics(options: AnalyticsOptions): void {
+    if (typeof window === "undefined") return;
     const clientId = options.clientId?.trim();
-    if (!clientId || typeof window === "undefined") return;
+    const apiUrl = options.apiUrl?.trim();
+    if (!clientId && !apiUrl) return;
+    if (!clientId || !apiUrl) {
+        const missing = clientId ? "VITE_OPENPANEL_API_URL" : "VITE_OPENPANEL_CLIENT_ID";
+        console.error(`[analytics] OpenPanel is off: ${missing} was not set at build time.`);
+        return;
+    }
     const untracked = options.untrackedPaths ?? DEFAULT_UNTRACKED_PATHS;
     client = import("@openpanel/web")
         .then(
             ({ OpenPanel }) =>
                 new OpenPanel({
                     clientId,
-                    apiUrl: options.apiUrl?.trim() || OPENPANEL_API_URL,
+                    apiUrl,
                     trackScreenViews: true,
                     trackOutgoingLinks: options.trackOutgoingLinks ?? false,
                     trackAttributes: options.trackAttributes ?? false,
@@ -50,7 +55,10 @@ export function startAnalytics(options: AnalyticsOptions): void {
                     },
                 }),
         )
-        .catch(() => null);
+        .catch((error: unknown) => {
+            console.error("[analytics] OpenPanel failed to load:", error);
+            return null;
+        });
 }
 
 function withClient(use: (openpanel: OpenPanel) => unknown): void {
