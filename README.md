@@ -22,7 +22,7 @@ the library takes values, the app owns its wording.
 | entry | runs in | peer | what |
 |---|---|---|---|
 | `obp-base/analytics` | browser | `@openpanel/web` | OpenPanel: `startAnalytics`, `track`, `identify`, `resetIdentity` |
-| `obp-base/sentry` | both (plain JS) | — | Privacy-first option factories for any Sentry SDK |
+| `obp-base/sentry` | both (plain JS) | — | Privacy-first option factories for any Sentry SDK, plus `sampleRate` |
 | `obp-base/mail` | server | — | `createMailer` over Resend's HTTP API |
 | `obp-base/email-check` | server | `mailchecker` | `checkEmail` — reason codes, the app owns the copy |
 | `obp-base/env` | server | `zod` ≥3.25 | `defineEnv` + `nonEmpty`, `url`, `intIn`, `flag`, `emailList` |
@@ -32,6 +32,10 @@ the library takes values, the app owns its wording.
 
 Entries are TypeScript source that the app's Vite build compiles. `sentry` and `check-env` are
 plain `.mjs` because Node runs them directly (`node --import`, the entrypoint), outside the bundle.
+
+Vite bundles TypeScript dependencies by default. An app whose config externalizes dependencies
+for SSR, or whose Vitest setup does, adds `ssr: { noExternal: ["obp-base"] }` to `vite.config.ts`
+and `test: { server: { deps: { inline: ["obp-base"] } } }` to `vitest.config.ts`.
 
 ## The env contract
 
@@ -66,14 +70,14 @@ track("checkout_started", { plan: "pro" });
 
 ```js
 import * as Sentry from "@sentry/tanstackstart-react";
-import { serverOptions } from "obp-base/sentry";
+import { sampleRate, serverOptions } from "obp-base/sentry";
 
 Sentry.init(
     serverOptions({
         dsn: process.env.SENTRY_DSN,
         environment: process.env.SENTRY_ENVIRONMENT,
         release: process.env.SENTRY_RELEASE,
-        tracesSampleRate: Number(process.env.SENTRY_TRACES_SAMPLE_RATE ?? 0.05),
+        tracesSampleRate: sampleRate(process.env.SENTRY_TRACES_SAMPLE_RATE, 0.05),
         sensitiveKeys: ["prompt"],
     }),
 );

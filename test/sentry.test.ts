@@ -1,5 +1,11 @@
 import { describe, expect, it } from "vitest";
-import { clientOptions, deepScrub, scrubString, serverOptions } from "../src/sentry/index.mjs";
+import {
+    clientOptions,
+    deepScrub,
+    sampleRate,
+    scrubString,
+    serverOptions,
+} from "../src/sentry/index.mjs";
 
 describe("scrubString", () => {
     it("redacts emails, image data and long base64", () => {
@@ -66,5 +72,17 @@ describe("clientOptions", () => {
         });
         expect(options.environment).toBe("production");
         expect(options.integrations).toEqual([]);
+    });
+});
+
+describe("sampleRate", () => {
+    it("falls back on blank or junk and clamps to 0..1", () => {
+        expect(sampleRate(undefined, 0.05)).toBe(0.05);
+        expect(sampleRate("", 0.05)).toBe(0.05);
+        expect(sampleRate("  ", 0.05)).toBe(0.05);
+        expect(sampleRate("abc", 0.05)).toBe(0.05);
+        expect(sampleRate("0", 0.05)).toBe(0);
+        expect(sampleRate("0.2", 0.05)).toBe(0.2);
+        expect(sampleRate("7", 0.05)).toBe(1);
     });
 });

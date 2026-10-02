@@ -116,6 +116,14 @@ function scrubBreadcrumb(breadcrumb, sensitive) {
     return breadcrumb;
 }
 
+export function sampleRate(value, fallback) {
+    const raw = typeof value === "string" ? value.trim() : value;
+    if (raw === undefined || raw === null || raw === "") return fallback;
+    const parsed = Number(raw);
+    if (!Number.isFinite(parsed)) return fallback;
+    return Math.min(1, Math.max(0, parsed));
+}
+
 function baseOptions(settings, fallbackEnvironment) {
     const dsn = settings.dsn?.trim() || undefined;
     const sensitive = keyMatcher([...SENSITIVE_KEYS, ...(settings.sensitiveKeys ?? [])]);

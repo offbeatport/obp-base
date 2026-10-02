@@ -33,6 +33,10 @@ export type SentryOptions = {
 export declare const SENSITIVE_KEYS: readonly string[];
 export declare const PRIVATE_DATA_COLLECTION: PrivateDataCollection;
 export declare function scrubString(value: string): string;
+export declare function sampleRate(
+    value: string | number | undefined | null,
+    fallback: number,
+): number;
 export declare function deepScrub<T>(value: T, sensitive?: RegExp, depth?: number): T;
 export declare function serverOptions(settings?: SentrySettings): SentryOptions;
 export declare function clientOptions(
