@@ -1,0 +1,80 @@
+{
+    "name": "obp-base",
+    "version": "0.1.0",
+    "type": "module",
+    "license": "MIT",
+    "description": "The Offbeatport product base: analytics, error reporting, mail, env and HTTP hardening shared across every app.",
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/offbeatport/obp-base.git"
+    },
+    "sideEffects": false,
+    "files": ["src", "bin", "snippets", "README.md"],
+    "bin": {
+        "obp-check-env": "./bin/check-env.mjs"
+    },
+    "exports": {
+        "./analytics": {
+            "types": "./src/analytics/index.ts",
+            "default": "./src/analytics/index.ts"
+        },
+        "./sentry": {
+            "types": "./src/sentry/index.d.mts",
+            "default": "./src/sentry/index.mjs"
+        },
+        "./mail": {
+            "types": "./src/mail/index.ts",
+            "default": "./src/mail/index.ts"
+        },
+        "./email-check": {
+            "types": "./src/email-check/index.ts",
+            "default": "./src/email-check/index.ts"
+        },
+        "./env": {
+            "types": "./src/env/index.ts",
+            "default": "./src/env/index.ts"
+        },
+        "./http": {
+            "types": "./src/http/index.ts",
+            "default": "./src/http/index.ts"
+        },
+        "./check-env": {
+            "types": "./src/check-env/index.d.mts",
+            "default": "./src/check-env/index.mjs"
+        },
+        "./snippets/openpanel.html": "./snippets/openpanel.html",
+        "./package.json": "./package.json"
+    },
+    "scripts": {
+        "typecheck": "tsc --noEmit",
+        "test": "vitest run",
+        "lint": "biome check .",
+        "lint:fix": "biome check --write ."
+    },
+    "peerDependencies": {
+        "@openpanel/web": "^1.4.1",
+        "mailchecker": "^6.0.20",
+        "zod": "^3.25.0 || ^4.0.0"
+    },
+    "peerDependenciesMeta": {
+        "@openpanel/web": {
+            "optional": true
+        },
+        "mailchecker": {
+            "optional": true
+        },
+        "zod": {
+            "optional": true
+        }
+    },
+    "devDependencies": {
+        "@biomejs/biome": "1.9.4",
+        "@openpanel/web": "1.4.1",
+        "@types/node": "^22.10.0",
+        "mailchecker": "^6.0.21",
+        "typescript": "^5.7.3",
+        "vitest": "^4.1.10",
+        "zod": "^4.6.5"
+    },
+    "packageManager": "pnpm@10.30.3+sha256.ff0a72140f6a6d66c0b284f6c9560aff605518e28c29aeac25fb262b74331588"
+}
